@@ -349,10 +349,6 @@ Este proyecto es **únicamente para propósitos educativos y de investigación d
 
 MIT - Este proyecto está disponible para uso educativo libre.
 
-## Autor
-
-Creado para demostración de análisis de seguridad con Snyk.
-
 ---
 
 **¡Feliz análisis de seguridad! 🔐**
