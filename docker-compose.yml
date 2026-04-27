@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Aplicación Node.js vulnerable
+  app:
+    build: .
+    container_name: ecommerce-vulnerable-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_db
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_NAME=ecommerce_db
+      - DB_USER=admin
+      - DB_PASSWORD=admin123
+      - STRIPE_KEY=sk_test_4eC39HqLyjWDarhtT657j8AqHrY
+      - JWT_SECRET=very-insecure-jwt-secret-key
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-network
+    volumes:
+      - ./uploads:/app/uploads
+
+  # MongoDB con configuración insegura
+  mongodb:
+    image: mongo:4.4
+    container_name: ecommerce-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: ecommerce_db
+    ports:
+      - "27017:27017"
+    networks:
+      - ecommerce-network
+    volumes:
+      - mongodb_data:/data/db
+
+  # MySQL opcional (vulnerabilidad adicional)
+  mysql:
+    image: mysql:5.7
+    container_name: ecommerce-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: ecommerce_user
+      MYSQL_PASSWORD: ecommerce_pass
+    ports:
+      - "3306:3306"
+    networks:
+      - ecommerce-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Redis opcional para sesiones (inseguro)
+  redis:
+    image: redis:6
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redis-password-insecure
+    networks:
+      - ecommerce-network
+    volumes:
+      - redis_data:/data
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  mysql_data:
+  redis_data:
